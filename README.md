@@ -20,4 +20,8 @@ To check if units are compatible:
 >>> units_compatible("lb/s", "kg/h")
 
 True
+
+>>> units_compatible("m/s", "m/s^2")
+
+False
 ```
