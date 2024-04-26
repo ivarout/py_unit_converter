@@ -181,13 +181,13 @@ def _get_si_unit(unit: str) -> tuple[str, float] | None:
 
 def _ensure_si_unit(unit: str) -> bool:
     """Check if string format is a valid SI Unit or convertible to one."""
-    for res in re.finditer(r"[a-zA-Z]+", unit):
-        if not _get_si_unit(res[0]):
-            raise NameError(f"{res[0]} not a valid unit (found in {unit})")
     if res := re.search(r"[^a-zA-Z0-9/*\^\(\)\[\] ]", unit):
         raise NameError(f"invalid character '{res[0]}' (found in {unit})")
     if unit.count("(") != unit.count(")"):
         raise NameError(f"unbalanced brackets (found in {unit})")
+    for res in re.finditer(r"[a-zA-Z]+", unit):
+        if not _get_si_unit(res[0]):
+            raise NameError(f"{res[0]} not a valid unit (found in {unit})")
 
 
 _conversion_factor_cache: dict[tuple[str, str], float] = {}
