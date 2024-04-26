@@ -5,11 +5,11 @@ A simple python module to calculate unit conversion factors.
 To calculate the unit conversion factor between two units:
 
 ```python
->>> unit_conversion_factor("lb", "kg")
+>>> unit_conversion_factor(source_unit="lb", target_unit="kg")
 
 0.45359237
 
->>> unit_conversion_factor("m/s^2", "in/ms^2")
+>>> unit_conversion_factor("m/s^2","in/ms^2")
 
 3.937007874015748e-05
 ```
