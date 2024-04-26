@@ -1,6 +1,6 @@
 # py_unit_converter
 
-A simple python module to calculate unit conversion factors. To use, simply copy unit_coverter.py to wherever appropriate. 
+A simple python module to calculate unit conversion factors. To use, simply copy [unit_coverter.py](unit_coverter.py) to wherever appropriate. 
 
 To calculate the unit conversion factor between two units:
 
