@@ -16,6 +16,7 @@ unit_conversion_factor("lb", "kg")
 author: Ingvar Out
 """
 
+import math
 import re
 
 
@@ -64,7 +65,8 @@ NON_SI_MAP = {
     "acre": ("m^2", 4046.85642),
     "h": ("s", 3600),
     "lightyear": ("m", 9.4605284e15),
-    "l": ("m^3", 0.001)
+    "l": ("m^3", 0.001),
+    "deg": ("rad", math.pi/180)
 }
 
 def units_compatible(unit1: str, unit2: str) -> bool:
@@ -174,8 +176,15 @@ def _get_si_unit(unit: str) -> tuple[str, float] | None:
             return unit_si, 1.0
         if (prefix := unit[:res.regs[0][0]]) in PREFIX_SI:
             return unit_si, PREFIX_SI[prefix]
-    if unit in NON_SI_MAP:
-        return NON_SI_MAP[unit]
+
+    for unit_non_si, unit_si in NON_SI_MAP.items():
+        if not (res := re.search(unit_non_si + "$", unit)):
+            continue
+        if res.regs[0][0] == 0:
+            return unit_si
+        if (prefix := unit[:res.regs[0][0]]) in PREFIX_SI:
+            return unit_si[0], unit_si[1] * PREFIX_SI[prefix]
+
     return None
 
 
@@ -209,4 +218,12 @@ if __name__ == "__main__":
     print(
         "To convert from pound to kilogram, multiply by",
         unit_conversion_factor(source_unit="lb", target_unit="kg")
+    )
+    print(
+        "To convert from kilopound to gram, multiply by",
+        unit_conversion_factor(source_unit="klb", target_unit="g")
+    )
+    print(
+        "To convert from radians to degrees, multiply by",
+        unit_conversion_factor(source_unit="rad", target_unit="deg")
     )
