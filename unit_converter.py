@@ -66,7 +66,8 @@ NON_SI_MAP = {
     "h": ("s", 3600),
     "lightyear": ("m", 9.4605284e15),
     "l": ("m^3", 0.001),
-    "deg": ("rad", math.pi/180)
+    "deg": ("rad", math.pi/180),
+    "dB": ("dB", 1.0)  # TODO add support for non proportional conversions 
 }
 
 def units_compatible(unit1: str, unit2: str) -> bool:
@@ -96,6 +97,15 @@ def unit_conversion_factor(source_unit: str, target_unit: str) -> float:
         raise NameError(f"Units incompatible: '{source_unit}', '{target_unit}'")
     source_exponents = _get_unit_exponents(source_unit)
     target_exponents = _get_unit_exponents(target_unit)
+
+    #handle non dimensional units
+    if not source_exponents:
+        source_expression = re.sub(r"\^", "**", source_unit)
+        target_expression = re.sub(r"\^", "**", target_unit)
+        try:
+            return eval(source_expression) / eval(target_expression)
+        except SyntaxError:
+            pass
 
     multiplier_source = multiplier_target = 1.0
     for unit, exponent in source_exponents.items():
@@ -190,7 +200,7 @@ def _get_si_unit(unit: str) -> tuple[str, float] | None:
 
 def _ensure_si_unit(unit: str) -> bool:
     """Check if string format is a valid SI Unit or convertible to one."""
-    if res := re.search(r"[^a-zA-Z0-9/*\^\(\)\[\] ]", unit):
+    if res := re.search(r"[^a-zA-Z0-9/*\^\(\)\[\]-]", unit):
         raise NameError(f"invalid character '{res[0]}' (found in {unit})")
     if unit.count("(") != unit.count(")"):
         raise NameError(f"unbalanced brackets (found in {unit})")
@@ -226,4 +236,8 @@ if __name__ == "__main__":
     print(
         "To convert from radians to degrees, multiply by",
         unit_conversion_factor(source_unit="rad", target_unit="deg")
+    )
+    print(
+        "To convert from 10^-3 to 10^6, multiply by",
+        unit_conversion_factor(source_unit="10^-3", target_unit="10^6")
     )
